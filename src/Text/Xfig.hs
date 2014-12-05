@@ -13,6 +13,28 @@ import Text.Printf
 data PointLine = PointLine { pointline_pairs :: [ (Int,Int) ] }
                deriving (Show,Ord,Eq)
 
+data PolyLine = PolyLine { polyline_object_code :: Int
+                         , polyline_sub_type :: Int
+                         , polyline_line_style :: Int
+                         , polyline_thickness :: Int
+                         , polyline_pen_color :: Int
+                         , polyline_fill_color :: Int
+                         , polyline_depth :: Int
+                         , polyline_pen_style :: Int
+                         , polyline_area_fill :: Int
+                         , polyline_style_val :: Float
+                         , polyline_join_style :: Int
+                         , polyline_cap_style :: Int
+                         , polyline_radius :: Int
+                         , polyline_forward_arrow :: Int
+                         , polyline_backward_arrow :: Int
+                         , polyline_npoints :: Int
+                         -- , polyline_forward_arrow_line :: Maybe ArrowLine
+                         -- , polyline_backward_arrow_line :: Maybe ArrowLine
+                         , polyline_point_line :: PointLine
+                         }
+              deriving (Show,Eq,Ord)
+
 data Spline = Spline { spline_object_code :: Int
                      , spline_sub_type :: Int
                      , spline_line_style :: Int
@@ -41,6 +63,63 @@ pair = do
     y <- decimal
     skipSpace
     return (x,y)
+
+polyline :: Parser PolyLine
+polyline = do
+    string "# polyline" 
+    skipSpace
+    object_code <- decimal
+    skipSpace
+    sub_type <- decimal
+    skipSpace
+    line_style <- decimal
+    skipSpace
+    thickness <- decimal
+    skipSpace
+    pen_color <- decimal
+    skipSpace
+    fill_color <- decimal
+    skipSpace
+    depth <- decimal
+    skipSpace
+    pen_style <- decimal
+    skipSpace
+    area_fill <- signed decimal
+    skipSpace
+    style_val <- double
+    skipSpace
+    join_style <- decimal
+    skipSpace
+    cap_style <- decimal
+    skipSpace
+    radius <- decimal
+    skipSpace
+    forward_arrow <- decimal
+    skipSpace
+    backward_arrow <- decimal
+    skipSpace
+    npoints <- decimal
+    skipSpace
+    pairs <- replicateM npoints pair
+    return PolyLine { polyline_object_code = object_code
+                    , polyline_sub_type    = sub_type
+                    , polyline_line_style  = line_style
+                    , polyline_thickness   = thickness
+                    , polyline_pen_color   = pen_color
+                    , polyline_fill_color  = fill_color
+                    , polyline_depth       = depth
+                    , polyline_pen_style   = pen_style
+                    , polyline_area_fill   = area_fill
+                    , polyline_style_val   = realToFrac style_val
+                    , polyline_join_style  = join_style
+                    , polyline_cap_style   = cap_style
+                    , polyline_radius      = radius
+                    , polyline_forward_arrow  = forward_arrow
+                    , polyline_backward_arrow = backward_arrow
+                    , polyline_npoints     = npoints
+                    , polyline_point_line  = PointLine pairs
+                    }
+
 
 spline :: Parser Spline
 spline = do
