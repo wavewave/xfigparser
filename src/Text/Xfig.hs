@@ -10,6 +10,9 @@ import qualified Data.Text as T
 import qualified Data.Text.IO as TIO
 import Text.Printf
 
+data Object = PL PolyLine | SP Spline
+            deriving (Show,Ord,Eq)
+
 data PointLine = PointLine { pointline_pairs :: [ (Int,Int) ] }
                deriving (Show,Ord,Eq)
 
@@ -174,3 +177,5 @@ spline = do
                   , spline_control_point_line = cpts
                   }
 
+object :: Parser Object
+object = (PL <$> polyline) <|> (SP <$> spline)
